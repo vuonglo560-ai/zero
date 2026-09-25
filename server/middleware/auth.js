@@ -13,7 +13,7 @@ async function authMiddleware(req, res, next) {
     const payload = jwt.verify(token, JWT_SECRET);
     
     // Demo user bypass - skip database lookup for demo@example.com
-    if (payload.email === 'demo@example.com' && (payload.id === 1 || payload.id === 7)) {
+    if (payload.email === 'demo@example.com') {
       req.user = {
         id: payload.id,
         name: payload.name || 'Nguyễn Văn A',

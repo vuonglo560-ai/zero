@@ -134,6 +134,7 @@ router.post('/login', async (req, res) => {
         .maybeSingle();
         
       if (demoUser) {
+        console.log(`Demo login success with actual user ID: ${demoUser.id}`);
         const token = jwt.sign({ 
           id: demoUser.id, 
           email: demoUser.email, 
@@ -145,6 +146,7 @@ router.post('/login', async (req, res) => {
           user: demoUser
         });
       } else {
+        console.log('Demo user not found in database, using fallback');
         // Fallback to static demo user
         const fallbackUser = {
           id: 1,
