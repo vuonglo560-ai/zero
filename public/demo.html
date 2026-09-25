@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendWise Personal - Demo Showcase</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .demo-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .demo-banner h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .demo-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Demo Banner -->
+        <div class="demo-banner">
+            <h2>🎯 SpendWise Personal - Demo Showcase</h2>
+            <p>Ứng dụng Quản lý Tài chính Cá nhân trên Cloud - Buổi 4</p>
+        </div>
+
+        <!-- Demo Info -->
+        <div class="demo-info">
+            <h3>📊 Thông tin Demo:</h3>
+            <ul>
+                <li><strong>User:</strong> Nguyễn Văn A (demo@example.com)</li>
+                <li><strong>Dữ liệu:</strong> 4 ví tiền, 15+ giao dịch, ngân sách tháng</li>
+                <li><strong>Tổng tài sản:</strong> ₫29,300,000</li>
+                <li><strong>Deployment:</strong> <a href="https://spendwise-personal.onrender.com" target="_blank">Production URL</a></li>
+            </ul>
+        </div>
+
+        <!-- Dashboard Summary -->
+        <div class="dashboard-summary">
+            <div class="summary-card income">
+                <div class="card-header">
+                    <h3>💰 Tổng thu</h3>
+                </div>
+                <p class="amount">₫25,000,000</p>
+                <p class="change positive">+15M từ lương tháng 9</p>
+            </div>
+            
+            <div class="summary-card expense">
+                <div class="card-header">
+                    <h3>💸 Tổng chi</h3>
+                </div>
+                <p class="amount">₫8,500,000</p>
+                <p class="change">Ăn uống, mua sắm, di chuyển</p>
+            </div>
+            
+            <div class="summary-card balance">
+                <div class="card-header">
+                    <h3>💎 Số dư ròng</h3>
+                </div>
+                <p class="amount positive">₫29,300,000</p>
+                <p class="change positive">Tăng 16.5M so với tháng trước</p>
+            </div>
+        </div>
+
+        <!-- Wallets Grid -->
+        <div class="section">
+            <h2>💼 Danh sách Ví Tài chính</h2>
+            <div class="wallet-grid">
+                <div class="wallet-card cash">
+                    <div class="wallet-icon">💵</div>
+                    <div class="wallet-info">
+                        <h4>Tiền mặt</h4>
+                        <p class="wallet-type">Cash</p>
+                        <p class="wallet-balance positive">₫5,000,000</p>
+                    </div>
+                </div>
+                
+                <div class="wallet-card bank">
+                    <div class="wallet-icon">🏦</div>
+                    <div class="wallet-info">
+                        <h4>Vietcombank</h4>
+                        <p class="wallet-type">Tài khoản ngân hàng</p>
+                        <p class="wallet-balance positive">₫25,000,000</p>
+                    </div>
+                </div>
+                
+                <div class="wallet-card ewallet">
+                    <div class="wallet-icon">📱</div>
+                    <div class="wallet-info">
+                        <h4>Ví MoMo</h4>
+                        <p class="wallet-type">Ví điện tử</p>
+                        <p class="wallet-balance positive">₫1,500,000</p>
+                    </div>
+                </div>
+                
+                <div class="wallet-card credit">
+                    <div class="wallet-icon">💳</div>
+                    <div class="wallet-info">
+                        <h4>Thẻ tín dụng</h4>
+                        <p class="wallet-type">Credit Card</p>
+                        <p class="wallet-balance negative">-₫2,200,000</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expense Chart -->
+        <div class="chart-container">
+            <h3>📊 Cơ cấu Chi tiêu Tháng 9/2026</h3>
+            <canvas id="expenseChart" width="400" height="200"></canvas>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="section">
+            <h2>💳 Giao dịch Gần đây</h2>
+            <div class="transaction-list">
+                <div class="transaction-item expense">
+                    <div class="transaction-icon">🍽️</div>
+                    <div class="transaction-details">
+                        <h4>Ăn trưa nhà hàng</h4>
+                        <p>Tiền mặt • Hôm nay</p>
+                    </div>
+                    <div class="transaction-amount expense">-₫250,000</div>
+                </div>
+                
+                <div class="transaction-item income">
+                    <div class="transaction-icon">💰</div>
+                    <div class="transaction-details">
+                        <h4>Lương tháng 9</h4>
+                        <p>Vietcombank • 25/09/2026</p>
+                    </div>
+                    <div class="transaction-amount income">+₫15,000,000</div>
+                </div>
+                
+                <div class="transaction-item expense">
+                    <div class="transaction-icon">☕</div>
+                    <div class="transaction-details">
+                        <h4>Café & Bánh ngọt</h4>
+                        <p>Ví MoMo • Hôm qua</p>
+                    </div>
+                    <div class="transaction-amount expense">-₫85,000</div>
+                </div>
+                
+                <div class="transaction-item expense">
+                    <div class="transaction-icon">🛒</div>
+                    <div class="transaction-details">
+                        <h4>Mua sắm Shopee</h4>
+                        <p>Thẻ tín dụng • 23/09/2026</p>
+                    </div>
+                    <div class="transaction-amount expense">-₫1,200,000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget & Goals -->
+        <div class="section">
+            <h2>🎯 Ngân sách & Mục tiêu</h2>
+            <div class="budget-grid">
+                <div class="budget-card">
+                    <h4>📊 Ngân sách Ăn uống</h4>
+                    <div class="budget-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 42%"></div>
+                        </div>
+                        <p>₫840,000 / ₫2,000,000 (42%)</p>
+                    </div>
+                </div>
+                
+                <div class="budget-card">
+                    <h4>💰 Mục tiêu: Mua Laptop</h4>
+                    <div class="budget-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 20%"></div>
+                        </div>
+                        <p>₫5,000,000 / ₫25,000,000 (20%)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="section">
+            <h2>⚙️ Tech Stack & Deployment</h2>
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <strong>Frontend:</strong> Vanilla HTML5, CSS3, JavaScript ES6+
+                </div>
+                <div class="tech-item">
+                    <strong>Backend:</strong> Node.js, Express.js, JWT Authentication
+                </div>
+                <div class="tech-item">
+                    <strong>Database:</strong> Supabase PostgreSQL (Cloud)
+                </div>
+                <div class="tech-item">
+                    <strong>Deployment:</strong> Render (Docker Container)
+                </div>
+                <div class="tech-item">
+                    <strong>Repository:</strong> <a href="https://github.com/vuonglo560-ai/zero" target="_blank">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize expense chart
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Ăn uống & Thực phẩm', 'Mua sắm & Thời trang', 'Di chuyển & Xăng xe', 'Giải trí & Du lịch', 'Hóa đơn & Tiện ích'],
+                datasets: [{
+                    data: [2500000, 1800000, 1200000, 800000, 2200000],
+                    backgroundColor: [
+                        '#ff6384',
+                        '#36a2eb', 
+                        '#cc65fe',
+                        '#ffce56',
+                        '#4bc0c0'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                }).format(context.parsed);
+                                return context.label + ': ' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate numbers on load
+            const amounts = document.querySelectorAll('.amount');
+            amounts.forEach(amount => {
+                amount.style.opacity = '0';
+                setTimeout(() => {
+                    amount.style.transition = 'opacity 0.5s ease-in-out';
+                    amount.style.opacity = '1';
+                }, Math.random() * 500);
+            });
+
+            // Add click handlers to wallet cards
+            const walletCards = document.querySelectorAll('.wallet-card');
+            walletCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
