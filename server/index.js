@@ -13,6 +13,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // API Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/demo', require('./routes/demo'));
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/wallets', require('./routes/wallets'));

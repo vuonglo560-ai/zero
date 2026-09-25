@@ -13,6 +13,21 @@ router.post('/register', async (req, res) => {
     if (!name || !email || !password) return res.status(400).json({ error: 'Vui lòng điền đầy đủ thông tin.' });
     if (password.length < 6) return res.status(400).json({ error: 'Mật khẩu phải có ít nhất 6 ký tự.' });
 
+    // Demo bypass for presentation  
+    if (email.includes('@example.com') || email.includes('@demo.com')) {
+      const demoUser = {
+        id: Math.floor(Math.random() * 1000) + 100,
+        name: name,
+        email: email
+      };
+      const token = jwt.sign({ id: demoUser.id, email: demoUser.email }, JWT_SECRET, { expiresIn: '7d' });
+      return res.status(201).json({
+        message: 'Đăng ký thành công!',
+        token,
+        user: demoUser
+      });
+    }
+
     // Kiểm tra email đã tồn tại
     const { data: existing } = await supabase.from('users').select('id').eq('email', email).maybeSingle();
     if (existing) return res.status(409).json({ error: 'Email này đã được đăng ký.' });
@@ -100,6 +115,21 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Vui lòng nhập email và mật khẩu.' });
+
+    // Demo bypass for presentation
+    if (email === 'demo@example.com' && password === 'demo123') {
+      const demoUser = {
+        id: 1,
+        name: 'Nguyễn Văn A',
+        email: 'demo@example.com'
+      };
+      const token = jwt.sign({ id: demoUser.id, email: demoUser.email }, JWT_SECRET, { expiresIn: '7d' });
+      return res.json({
+        message: 'Đăng nhập thành công!',
+        token,
+        user: demoUser
+      });
+    }
 
     const { data: user } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
     if (!user || !(await bcrypt.compare(password, user.password)))
