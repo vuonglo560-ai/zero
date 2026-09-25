@@ -126,21 +126,42 @@ router.post('/login', async (req, res) => {
 
     // Demo bypass for presentation
     if (email === 'demo@example.com' && password === 'demo123') {
-      const demoUser = {
-        id: 1,
-        name: 'Nguyễn Văn A',
-        email: 'demo@example.com'
-      };
-      const token = jwt.sign({ 
-        id: demoUser.id, 
-        email: demoUser.email, 
-        name: demoUser.name 
-      }, JWT_SECRET, { expiresIn: '7d' });
-      return res.json({
-        message: 'Đăng nhập thành công!',
-        token,
-        user: demoUser
-      });
+      // Get actual demo user from database
+      const { data: demoUser } = await supabase
+        .from('users')
+        .select('id, name, email')
+        .eq('email', 'demo@example.com')
+        .maybeSingle();
+        
+      if (demoUser) {
+        const token = jwt.sign({ 
+          id: demoUser.id, 
+          email: demoUser.email, 
+          name: demoUser.name 
+        }, JWT_SECRET, { expiresIn: '7d' });
+        return res.json({
+          message: 'Đăng nhập thành công!',
+          token,
+          user: demoUser
+        });
+      } else {
+        // Fallback to static demo user
+        const fallbackUser = {
+          id: 1,
+          name: 'Nguyễn Văn A',
+          email: 'demo@example.com'
+        };
+        const token = jwt.sign({ 
+          id: fallbackUser.id, 
+          email: fallbackUser.email, 
+          name: fallbackUser.name 
+        }, JWT_SECRET, { expiresIn: '7d' });
+        return res.json({
+          message: 'Đăng nhập thành công!',
+          token,
+          user: fallbackUser
+        });
+      }
     }
 
     const { data: user } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
@@ -169,8 +190,8 @@ router.get('/me', authMiddleware, async (req, res) => {
     // Demo user - return stored data immediately
     if (req.user.email === 'demo@example.com') {
       return res.json({
-        id: 1,
-        name: 'Nguyễn Văn A',
+        id: req.user.id,
+        name: req.user.name || 'Nguyễn Văn A',
         email: 'demo@example.com',
         created_at: '2024-09-01T00:00:00.000Z'
       });
