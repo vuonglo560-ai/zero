@@ -126,27 +126,53 @@ router.post('/login', async (req, res) => {
 
     // Demo bypass for presentation
     if (email === 'demo@example.com' && password === 'demo123') {
+      console.log('Demo login attempt - searching for user in database...');
+      
       // Get actual demo user from database
-      const { data: demoUser } = await supabase
-        .from('users')
-        .select('id, name, email')
-        .eq('email', 'demo@example.com')
-        .maybeSingle();
+      try {
+        const { data: demoUser, error: userError } = await supabase
+          .from('users')
+          .select('id, name, email')
+          .eq('email', 'demo@example.com')
+          .maybeSingle();
+          
+        if (userError) {
+          console.error('Database error during demo login:', userError);
+        }
         
-      if (demoUser) {
-        console.log(`Demo login success with actual user ID: ${demoUser.id}`);
-        const token = jwt.sign({ 
-          id: demoUser.id, 
-          email: demoUser.email, 
-          name: demoUser.name 
-        }, JWT_SECRET, { expiresIn: '7d' });
-        return res.json({
-          message: 'Đăng nhập thành công!',
-          token,
-          user: demoUser
-        });
-      } else {
-        console.log('Demo user not found in database, using fallback');
+        if (demoUser) {
+          console.log(`Demo login success with actual user ID: ${demoUser.id}`);
+          const token = jwt.sign({ 
+            id: demoUser.id, 
+            email: demoUser.email, 
+            name: demoUser.name 
+          }, JWT_SECRET, { expiresIn: '7d' });
+          return res.json({
+            message: 'Đăng nhập thành công!',
+            token,
+            user: demoUser
+          });
+        } else {
+          console.log('Demo user not found in database, using fallback ID 1');
+          // Fallback to static demo user
+          const fallbackUser = {
+            id: 1,
+            name: 'Nguyễn Văn A',
+            email: 'demo@example.com'
+          };
+          const token = jwt.sign({ 
+            id: fallbackUser.id, 
+            email: fallbackUser.email, 
+            name: fallbackUser.name 
+          }, JWT_SECRET, { expiresIn: '7d' });
+          return res.json({
+            message: 'Đăng nhập thành công!',
+            token,
+            user: fallbackUser
+          });
+        }
+      } catch (dbError) {
+        console.error('Database connection error during demo login:', dbError);
         // Fallback to static demo user
         const fallbackUser = {
           id: 1,
