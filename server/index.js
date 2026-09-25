@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -23,6 +23,27 @@ app.use('/api/goals', require('./routes/goals'));
 app.use('/api/debts', require('./routes/debts'));
 app.use('/api/recurring', require('./routes/recurring'));
 
+// API Documentation endpoint
+app.get('/api', (req, res) => {
+  res.json({
+    name: 'SpendWise Personal API',
+    version: '1.0.1',
+    description: 'REST API cho ứng dụng quản lý chi tiêu cá nhân',
+    baseUrl: `{req.protocol}://${req.get('host')}/api`,
+    endpoints: {
+      auth: ['POST /api/auth/register', 'POST /api/auth/login', 'GET /api/auth/me'],
+      wallets: ['GET /api/wallets', 'POST /api/wallets', 'PUT /api/wallets/:id', 'DELETE /api/wallets/:id'],
+      transactions: ['GET /api/transactions', 'POST /api/transactions', 'PUT /api/transactions/:id', 'DELETE /api/transactions/:id'],
+      budgets: ['GET /api/budgets', 'POST /api/budgets', 'PUT /api/budgets/:id', 'DELETE /api/budgets/:id'],
+      goals: ['GET /api/goals', 'POST /api/goals', 'PUT /api/goals/:id', 'DELETE /api/goals/:id'],
+      debts: ['GET /api/debts', 'POST /api/debts', 'PUT /api/debts/:id', 'DELETE /api/debts/:id'],
+      recurring: ['GET /api/recurring', 'POST /api/recurring', 'PUT /api/recurring/:id', 'DELETE /api/recurring/:id'],
+      other: ['GET /api/categories', 'GET /api/dashboard/summary', 'GET /api/health']
+    },
+    demo: { email: 'demo@example.com', password: 'demo123' }
+  });
+});
+
 app.get('/api/health', (req, res) => {
   const { supabase } = require('./supabase');
   res.json({
@@ -36,12 +57,10 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Health check without API prefix
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Standalone demo route
 app.get('/standalone-demo', (req, res) => {
   const demoPath = path.join(__dirname, '..', 'public', 'standalone-demo.html');
   if (fs.existsSync(demoPath)) {
@@ -51,7 +70,6 @@ app.get('/standalone-demo', (req, res) => {
   }
 });
 
-// No-auth demo route  
 app.get('/no-auth-demo', (req, res) => {
   const demoPath = path.join(__dirname, '..', 'public', 'no-auth-demo.html');
   if (fs.existsSync(demoPath)) {
@@ -61,7 +79,6 @@ app.get('/no-auth-demo', (req, res) => {
   }
 });
 
-// Monitor dashboard route
 app.get('/monitor', (req, res) => {
   const monitorPath = path.join(__dirname, '..', 'public', 'monitor-dashboard.html');
   if (fs.existsSync(monitorPath)) {
@@ -71,7 +88,7 @@ app.get('/monitor', (req, res) => {
   }
 });
 
-// SPA fallback — serve index.html cho mọi route không phải API
+// SPA fallback
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, '..', 'public', 'index.html');
   if (fs.existsSync(indexPath)) {
@@ -81,7 +98,6 @@ app.get('*', (req, res) => {
   }
 });
 
-// Chỉ start server khi chạy trực tiếp (không phải Vercel serverless)
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`\n🚀 SpendWise Personal: http://localhost:${PORT}`);
@@ -91,4 +107,3 @@ if (require.main === module) {
 }
 
 module.exports = app;
-
