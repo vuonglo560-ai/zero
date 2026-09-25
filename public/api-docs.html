@@ -1,0 +1,280 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Documentation - SpendWise Personal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    h1 { font-size: 2.5em; margin-bottom: 10px; }
+    .subtitle { opacity: 0.9; margin-bottom: 30px; font-size: 1.1em; }
+    .base-url {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      font-family: monospace;
+      word-break: break-all;
+    }
+    .section { margin-bottom: 30px; }
+    .section h2 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+      padding-bottom: 10px;
+    }
+    .endpoint {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      transition: all 0.3s;
+    }
+    .endpoint:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateX(5px);
+    }
+    .method {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-right: 10px;
+      font-size: 0.85em;
+    }
+    .get { background: #10b981; }
+    .post { background: #3b82f6; }
+    .put { background: #f59e0b; }
+    .delete { background: #ef4444; }
+    .path {
+      font-family: monospace;
+      color: #fbbf24;
+      margin-right: 10px;
+    }
+    .description { opacity: 0.9; }
+    .demo-info {
+      background: rgba(16, 185, 129, 0.2);
+      border-left: 4px solid #10b981;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-top: 30px;
+    }
+    .demo-info h3 { margin-bottom: 10px; }
+    .demo-info code {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔌 API Documentation</h1>
+    <p class="subtitle">SpendWise Personal - REST API Endpoints</p>
+    
+    <div class="base-url">
+      <strong>Base URL:</strong> https://spendwise-personal.onrender.com/api
+    </div>
+
+    <div class="section">
+      <h2>🔐 Authentication</h2>
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/api/auth/register</span>
+        <span class="description">Đăng ký tài khoản mới</span>
+      </div>
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/api/auth/login</span>
+        <span class="description">Đăng nhập và nhận JWT token</span>
+      </div>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/api/auth/me</span>
+        <span class="description">Lấy thông tin user hiện tại</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>💰 Ví tiền (Wallets)</h2>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/api/wallets</span>
+        <span class="description">Lấy danh sách ví</span>
+      </div>
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/api/wallets</span>
+        <span class="description">Tạo ví mới</span>
+      </div>
+      <div class="endpoint">
+        <span class="method put">PUT</span>
+        <span class="path">/api/wallets/:id</span>
+        <span class="description">Cập nhật ví</span>
+      </div>
+      <div class="endpoint">
+        <span class="method delete">DELETE</span>
+        <span class="path">/api/wallets/:id</span>
+        <span class="description">Xóa ví</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📊 Giao dịch (Transactions)</h2>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/api/transactions</span>
+        <span class="description">Lấy danh sách giao dịch (có filter theo tháng)</span>
+      </div>
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/api/transactions</span>
+        <span class="description">Tạo giao dịch mới</span>
+      </div>
+      <div class="endpoint">
+        <span class="method put">PUT</span>
+        <span class="path">/api/transactions/:id</span>
+        <span class="description">Cập nhật giao dịch</span>
+      </div>
+      <div class="endpoint">
+        <span class="method delete">DELETE</span>
+        <span class="path">/api/transactions/:id</span>
+        <span class="description">Xóa giao dịch</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🎯 Ngân sách (Budgets)</h2>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/api/budgets</span>
+        <span class="description">Lấy danh sách ngân sách</span>
+      </div>
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/api/budgets</span>
+        <span class="description">Tạo ngân sách mới</span>
+      </div>
+      <div class="endpoint">
+        <span class="method put">PUT</span>
+        <span class="path">/api/budgets/:id</span>
+        <span class="description">Cập nhật ngân sách</span>
+      </div>
+      <div class="endpoint">
+        <span class="method delete">DELETE</span>
+        <span class="path">/api/budgets/:id</span>
+        <span class="description">Xóa ngân sách</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🎁 Mục tiêu tiết kiệm (Savings Goals)</h2>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/api/goals</span>
+        <span class="description">Lấy danh sách mục tiêu</span>
+      </div>
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/api/goals</span>
+        <span class="description">Tạo mục tiêu mới</span>
+      </div>
+      <div class="endpoint">
+        <span class="method put">PUT</span>
+        <span class="path">/api/goals/:id</span>
+        <span class="description">Cập nhật mục tiêu</span>
+      </div>
+      <div class="endpoint">
+        <span class="method delete">DELETE</span>
+        <span class="path">/api/goals/:id</span>
+        <span class="description">Xóa mục tiêu</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📋 Sổ vay nợ (Debts)</h2>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/api/debts</span>
+        <span class="description">Lấy danh sách vay nợ</span>
+      </div>
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/api/debts</span>
+        <span class="description">Tạo khoản vay/nợ mới</span>
+      </div>
+      <div class="endpoint">
+        <span class="method put">PUT</span>
+        <span class="path">/api/debts/:id</span>
+        <span class="description">Cập nhật khoản vay/nợ</span>
+      </div>
+      <div class="endpoint">
+        <span class="method delete">DELETE</span>
+        <span class="path">/api/debts/:id</span>
+        <span class="description">Xóa khoản vay/nợ</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🔄 Thu/Chi định kỳ (Recurring)</h2>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/api/recurring</span>
+        <span class="description">Lấy danh sách giao dịch định kỳ</span>
+      </div>
+      <div class="endpoint">
+        <span class="method post">POST</span>
+        <span class="path">/api/recurring</span>
+        <span class="description">Tạo giao dịch định kỳ mới</span>
+      </div>
+      <div class="endpoint">
+        <span class="method put">PUT</span>
+        <span class="path">/api/recurring/:id</span>
+        <span class="description">Cập nhật giao dịch định kỳ</span>
+      </div>
+      <div class="endpoint">
+        <span class="method delete">DELETE</span>
+        <span class="path">/api/recurring/:id</span>
+        <span class="description">Xóa giao dịch định kỳ</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📂 Danh mục & Dashboard</h2>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/api/categories</span>
+        <span class="description">Lấy danh sách danh mục</span>
+      </div>
+      <div class="endpoint">
+        <span class="method get">GET</span>
+        <span class="path">/api/dashboard/summary</span>
+        <span class="description">Lấy tổng quan dashboard (thu/chi, biểu đồ, alerts)</span>
+      </div>
+    </div>
+
+    <div class="demo-info">
+      <h3>🧪 Demo Account</h3>
+      <p><strong>Email:</strong> <code>demo@example.com</code></p>
+      <p><strong>Password:</strong> <code>demo123</code></p>
+      <p style="margin-top: 10px; opacity: 0.9;">Tất cả endpoints (trừ auth) yêu cầu header: <code>Authorization: Bearer {token}</code></p>
+    </div>
+  </div>
+</body>
+</html>
