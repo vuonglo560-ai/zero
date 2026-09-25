@@ -20,5 +20,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV NODE_ENV=production
 
-# Tự động tạo seed dữ liệu mẫu nếu chưa có CSDL và khởi chạy server
-CMD ["sh", "-c", "node seed.js && node server/index.js"]
+# Khởi chạy server (không seed tự động để tránh lỗi)
+CMD ["node", "server/index.js"]
