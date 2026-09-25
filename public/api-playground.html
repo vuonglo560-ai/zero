@@ -1,0 +1,423 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Playground - SpendWise Personal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+    .header p { opacity: 0.9; font-size: 1.1em; }
+    .auth-section {
+      background: #f8f9fa;
+      padding: 20px 30px;
+      border-bottom: 1px solid #dee2e6;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .auth-section input {
+      flex: 1;
+      min-width: 200px;
+      padding: 10px 15px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .auth-section button {
+      padding: 10px 25px;
+      background: #667eea;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .auth-section button:hover { background: #5568d3; transform: translateY(-2px); }
+    .auth-status {
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .auth-status.logged-in { background: #d4edda; color: #155724; }
+    .auth-status.logged-out { background: #f8d7da; color: #721c24; }
+    .content {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: 600px;
+    }
+    .sidebar {
+      background: #f8f9fa;
+      border-right: 1px solid #dee2e6;
+      padding: 20px;
+      overflow-y: auto;
+      max-height: calc(100vh - 200px);
+    }
+    .endpoint-group {
+      margin-bottom: 25px;
+    }
+    .endpoint-group h3 {
+      font-size: 1em;
+      color: #667eea;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .endpoint-item {
+      padding: 10px;
+      margin-bottom: 5px;
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .endpoint-item:hover {
+      background: #e9ecef;
+      border-left-color: #667eea;
+      transform: translateX(3px);
+    }
+    .endpoint-item.active {
+      background: #667eea;
+      color: #fff;
+      border-left-color: #764ba2;
+    }
+    .method {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    .method.get { background: #10b981; color: #fff; }
+    .method.post { background: #3b82f6; color: #fff; }
+    .method.put { background: #f59e0b; color: #fff; }
+    .method.delete { background: #ef4444; color: #fff; }
+    .main-content {
+      padding: 30px;
+      overflow-y: auto;
+      max-height: calc(100vh - 200px);
+    }
+    .endpoint-detail h2 {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+    .endpoint-path {
+      font-family: monospace;
+      background: #f8f9fa;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      color: #764ba2;
+      font-weight: 600;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #495057;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 10px 15px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .form-group textarea {
+      min-height: 120px;
+      font-family: 'Courier New', monospace;
+    }
+    .btn-test {
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    .btn-test:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    .response-section {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      display: none;
+    }
+    .response-section.show { display: block; }
+    .response-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .response-status {
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .response-status.success { background: #d4edda; color: #155724; }
+    .response-status.error { background: #f8d7da; color: #721c24; }
+    .response-body {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #667eea;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔌 API Playground</h1>
+      <p>SpendWise Personal - Interactive API Testing</p>
+    </div>
+
+    <div class="auth-section">
+      <input type="email" id="loginEmail" placeholder="Email (demo@example.com)" value="demo@example.com">
+      <input type="password" id="loginPassword" placeholder="Password (demo123)" value="demo123">
+      <button onclick="login()">🔐 Login</button>
+      <button onclick="logout()" style="background: #dc3545;">🚪 Logout</button>
+      <div class="auth-status logged-out" id="authStatus">Not authenticated</div>
+    </div>
+
+    <div class="content">
+      <div class="sidebar" id="sidebar"></div>
+      <div class="main-content" id="mainContent">
+        <h2>👋 Welcome to API Playground!</h2>
+        <p>Chọn một endpoint bên trái để bắt đầu test API.</p>
+        <p style="margin-top: 15px;">✨ <strong>Quick Start:</strong></p>
+        <ol style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+          <li>Click nút "Login" phía trên (đã điền sẵn demo account)</li>
+          <li>Chọn endpoint từ sidebar</li>
+          <li>Nhập parameters (nếu cần)</li>
+          <li>Click "🚀 Test API" và xem kết quả!</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin + '/api';
+    let authToken = localStorage.getItem('api_token');
+    
+    const endpoints = {
+      auth: [
+        { method: 'POST', path: '/api/auth/login', name: 'Login', needsAuth: false, body: { email: 'demo@example.com', password: 'demo123' } },
+        { method: 'POST', path: '/api/auth/register', name: 'Register', needsAuth: false, body: { name: 'Test User', email: 'test@example.com', password: 'test123' } },
+        { method: 'GET', path: '/api/auth/me', name: 'Get Current User', needsAuth: true }
+      ],
+      wallets: [
+        { method: 'GET', path: '/api/wallets', name: 'Get Wallets', needsAuth: true },
+        { method: 'POST', path: '/api/wallets', name: 'Create Wallet', needsAuth: true, body: { name: 'Test Wallet', type: 'cash', balance: 1000000, icon: '💰', color: '#10b981' } }
+      ],
+      transactions: [
+        { method: 'GET', path: '/api/transactions', name: 'Get Transactions', needsAuth: true, params: { month: new Date().toISOString().slice(0, 7) } }
+      ],
+      other: [
+        { method: 'GET', path: '/api/categories', name: 'Get Categories', needsAuth: true },
+        { method: 'GET', path: '/api/dashboard/summary', name: 'Dashboard Summary', needsAuth: true },
+        { method: 'GET', path: '/api/health', name: 'Health Check', needsAuth: false }
+      ]
+    };
+
+    function renderSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.innerHTML = '';
+      
+      Object.keys(endpoints).forEach(group => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'endpoint-group';
+        groupDiv.innerHTML = `<h3>${group.toUpperCase()}</h3>`;
+        
+        endpoints[group].forEach((ep, idx) => {
+          const item = document.createElement('div');
+          item.className = 'endpoint-item';
+          item.innerHTML = `<span class="method ${ep.method.toLowerCase()}">${ep.method}</span> ${ep.name}`;
+          item.onclick = () => showEndpoint(group, idx);
+          groupDiv.appendChild(item);
+        });
+        
+        sidebar.appendChild(groupDiv);
+      });
+    }
+
+    function showEndpoint(group, idx) {
+      const ep = endpoints[group][idx];
+      const main = document.getElementById('mainContent');
+      
+      main.innerHTML = `
+        <div class="endpoint-detail">
+          <h2>${ep.name}</h2>
+          <div class="endpoint-path"><span class="method ${ep.method.toLowerCase()}">${ep.method}</span> ${ep.path}</div>
+          
+          ${ep.params ? `
+            <div class="form-group">
+              <label>Query Parameters (JSON)</label>
+              <textarea id="queryParams">${JSON.stringify(ep.params, null, 2)}</textarea>
+            </div>
+          ` : ''}
+          
+          ${ep.body ? `
+            <div class="form-group">
+              <label>Request Body (JSON)</label>
+              <textarea id="requestBody">${JSON.stringify(ep.body, null, 2)}</textarea>
+            </div>
+          ` : ''}
+          
+          <button class="btn-test" onclick="testEndpoint('${group}', ${idx})">🚀 Test API</button>
+          
+          <div class="response-section" id="responseSection">
+            <div class="response-header">
+              <h3>Response</h3>
+              <div class="response-status" id="responseStatus"></div>
+            </div>
+            <pre class="response-body" id="responseBody"></pre>
+          </div>
+        </div>
+      `;
+    }
+
+    async function testEndpoint(group, idx) {
+      const ep = endpoints[group][idx];
+      const responseSection = document.getElementById('responseSection');
+      const responseStatus = document.getElementById('responseStatus');
+      const responseBody = document.getElementById('responseBody');
+      
+      responseSection.classList.add('show');
+      responseBody.textContent = 'Loading...';
+      responseStatus.textContent = '';
+      
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (ep.needsAuth && authToken) {
+          headers['Authorization'] = `Bearer ${authToken}`;
+        }
+        
+        let url = ep.path;
+        const options = { method: ep.method, headers };
+        
+        if (ep.params) {
+          const params = JSON.parse(document.getElementById('queryParams').value);
+          url += '?' + new URLSearchParams(params);
+        }
+        
+        if (ep.body && (ep.method === 'POST' || ep.method === 'PUT')) {
+          options.body = document.getElementById('requestBody').value;
+        }
+        
+        const res = await fetch(API_BASE.replace('/api', '') + url, options);
+        const data = await res.json();
+        
+        responseStatus.textContent = `${res.status} ${res.statusText}`;
+        responseStatus.className = `response-status ${res.ok ? 'success' : 'error'}`;
+        responseBody.textContent = JSON.stringify(data, null, 2);
+        
+        if (ep.path === '/api/auth/login' && data.token) {
+          authToken = data.token;
+          localStorage.setItem('api_token', authToken);
+          updateAuthStatus();
+        }
+      } catch (err) {
+        responseStatus.textContent = 'Error';
+        responseStatus.className = 'response-status error';
+        responseBody.textContent = err.message;
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      try {
+        const res = await fetch(API_BASE + '/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await res.json();
+        if (data.token) {
+          authToken = data.token;
+          localStorage.setItem('api_token', authToken);
+          updateAuthStatus();
+          alert('✅ Login successful!');
+        } else {
+          alert('❌ Login failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('❌ Login error: ' + err.message);
+      }
+    }
+
+    function logout() {
+      authToken = null;
+      localStorage.removeItem('api_token');
+      updateAuthStatus();
+      alert('👋 Logged out');
+    }
+
+    function updateAuthStatus() {
+      const status = document.getElementById('authStatus');
+      if (authToken) {
+        status.textContent = '✅ Authenticated';
+        status.className = 'auth-status logged-in';
+      } else {
+        status.textContent = '❌ Not authenticated';
+        status.className = 'auth-status logged-out';
+      }
+    }
+
+    renderSidebar();
+    updateAuthStatus();
+  </script>
+</body>
+</html>
