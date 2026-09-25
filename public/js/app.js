@@ -38,11 +38,20 @@ async function showApp() {
   document.getElementById('auth-view').style.display = 'none';
   document.getElementById('app-view').style.display = 'block';
 
-  try {
-    const freshUser = await apiGet('/api/auth/me');
-    currentUser = { ...currentUser, ...freshUser };
-    localStorage.setItem('sw_user', JSON.stringify(currentUser));
-  } catch (_) {}
+  // Skip /me verification for demo user - use stored data
+  if (currentUser && currentUser.email === 'demo@example.com') {
+    console.log('Demo user detected - using stored profile');
+  } else {
+    // Only verify for non-demo users
+    try {
+      const freshUser = await apiGet('/api/auth/me');
+      currentUser = { ...currentUser, ...freshUser };
+      localStorage.setItem('sw_user', JSON.stringify(currentUser));
+    } catch (err) {
+      console.log('User verification failed, using stored profile:', err.message);
+      // Don't logout, just continue with stored data
+    }
+  }
 
   updateSidebarUser();
   await Promise.all([loadCategories(), loadWallets()]);
