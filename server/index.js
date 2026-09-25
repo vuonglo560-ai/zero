@@ -11,19 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// API Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/demo', require('./routes/demo'));
-app.use('/api/transactions', require('./routes/transactions'));
-app.use('/api/dashboard', require('./routes/dashboard'));
-app.use('/api/wallets', require('./routes/wallets'));
-app.use('/api/budgets', require('./routes/budgets'));
-app.use('/api/categories', require('./routes/categories'));
-app.use('/api/goals', require('./routes/goals'));
-app.use('/api/debts', require('./routes/debts'));
-app.use('/api/recurring', require('./routes/recurring'));
-
-// API Documentation endpoint
+// API Documentation endpoint - MUST BE BEFORE app.use('/api/...')
 app.get('/api', (req, res) => {
   res.json({
     name: 'SpendWise Personal API',
@@ -43,6 +31,18 @@ app.get('/api', (req, res) => {
     demo: { email: 'demo@example.com', password: 'demo123' }
   });
 });
+
+// API Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/demo', require('./routes/demo'));
+app.use('/api/transactions', require('./routes/transactions'));
+app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/wallets', require('./routes/wallets'));
+app.use('/api/budgets', require('./routes/budgets'));
+app.use('/api/categories', require('./routes/categories'));
+app.use('/api/goals', require('./routes/goals'));
+app.use('/api/debts', require('./routes/debts'));
+app.use('/api/recurring', require('./routes/recurring'));
 
 app.get('/api/health', (req, res) => {
   const { supabase } = require('./supabase');
