@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendWise Personal - No Auth Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .status-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .income { color: #10b981; }
+        .expense { color: #ef4444; }
+        .balance { color: #3b82f6; }
+
+        .wallet-item {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .wallet-icon {
+            font-size: 1.5rem;
+            margin-right: 12px;
+        }
+
+        .wallet-info {
+            flex: 1;
+        }
+
+        .wallet-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .wallet-balance {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .tx-icon {
+            font-size: 1.3rem;
+            margin-right: 12px;
+        }
+
+        .tx-info {
+            flex: 1;
+        }
+
+        .tx-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .tx-meta {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .tx-amount {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .feature-list li {
+            margin: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            margin: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .tech-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #10b981;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💎 SpendWise Personal</h1>
+            <p>Quản lý tài chính cá nhân thông minh trên Cloud</p>
+        </div>
+
+        <div class="status-bar">
+            <h3>🚀 Production Demo - No Authentication Required</h3>
+            <p><strong>Live URL:</strong> https://spendwise-personal.onrender.com</p>
+            <p><strong>GitHub:</strong> https://github.com/vuonglo560-ai/zero</p>
+            <div style="margin-top: 15px;">
+                <a href="/" class="btn">🔑 Try Full App</a>
+                <a href="/demo.html" class="btn">📊 Interactive Demo</a>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Financial Overview -->
+            <div class="card">
+                <h3>💰 Tổng quan Tài chính</h3>
+                <div class="stat-item">
+                    <span class="stat-label">💵 Tổng thu nhập</span>
+                    <span class="stat-value income">₫25,000,000</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">💸 Tổng chi tiêu</span>
+                    <span class="stat-value expense">₫8,500,000</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">💎 Tài sản ròng</span>
+                    <span class="stat-value balance">₫29,300,000</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">📈 Tăng trường tháng 9</span>
+                    <span class="stat-value income">+16.5M (128%)</span>
+                </div>
+            </div>
+
+            <!-- Wallet Management -->
+            <div class="card">
+                <h3>💼 Quản lý Ví tiền (4 ví)</h3>
+                <div class="wallet-item">
+                    <span class="wallet-icon">💵</span>
+                    <div class="wallet-info">
+                        <div class="wallet-name">Tiền mặt</div>
+                        <div class="wallet-balance">Cash wallet</div>
+                    </div>
+                    <div class="wallet-balance income">₫5,000,000</div>
+                </div>
+                <div class="wallet-item">
+                    <span class="wallet-icon">🏦</span>
+                    <div class="wallet-info">
+                        <div class="wallet-name">Vietcombank</div>
+                        <div class="wallet-balance">Main account</div>
+                    </div>
+                    <div class="wallet-balance income">₫25,000,000</div>
+                </div>
+                <div class="wallet-item">
+                    <span class="wallet-icon">📱</span>
+                    <div class="wallet-info">
+                        <div class="wallet-name">Ví MoMo</div>
+                        <div class="wallet-balance">E-wallet</div>
+                    </div>
+                    <div class="wallet-balance income">₫1,500,000</div>
+                </div>
+                <div class="wallet-item">
+                    <span class="wallet-icon">💳</span>
+                    <div class="wallet-info">
+                        <div class="wallet-name">Thẻ tín dụng</div>
+                        <div class="wallet-balance">Credit limit</div>
+                    </div>
+                    <div class="wallet-balance expense">-₫2,200,000</div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="card">
+                <h3>💳 Giao dịch Gần đây (39 giao dịch)</h3>
+                <div class="transaction-item">
+                    <span class="tx-icon">🍽️</span>
+                    <div class="tx-info">
+                        <div class="tx-title">Ăn trưa nhà hàng</div>
+                        <div class="tx-meta">Ăn uống • Hôm nay</div>
+                    </div>
+                    <div class="tx-amount expense">-₫250,000</div>
+                </div>
+                <div class="transaction-item">
+                    <span class="tx-icon">💰</span>
+                    <div class="tx-info">
+                        <div class="tx-title">Lương tháng 9</div>
+                        <div class="tx-meta">Thu nhập • 25/09/2026</div>
+                    </div>
+                    <div class="tx-amount income">+₫15,000,000</div>
+                </div>
+                <div class="transaction-item">
+                    <span class="tx-icon">☕</span>
+                    <div class="tx-info">
+                        <div class="tx-title">Café & Bánh ngọt</div>
+                        <div class="tx-meta">Ăn uống • Hôm qua</div>
+                    </div>
+                    <div class="tx-amount expense">-₫85,000</div>
+                </div>
+                <div class="transaction-item">
+                    <span class="tx-icon">🛒</span>
+                    <div class="tx-info">
+                        <div class="tx-title">Mua sắm Shopee</div>
+                        <div class="tx-meta">Mua sắm • 23/09/2026</div>
+                    </div>
+                    <div class="tx-amount expense">-₫1,200,000</div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="card">
+                <h3>🎯 Tính năng Chính</h3>
+                <ul class="feature-list">
+                    <li>Quản lý đa ví tài chính</li>
+                    <li>Theo dõi thu chi tự động</li>
+                    <li>Ngân sách & mục tiêu tiết kiệm</li>
+                    <li>Biểu đồ phân tích chi tiêu</li>
+                    <li>Sổ theo dõi vay nợ</li>
+                    <li>Giao dịch định kỳ</li>
+                    <li>Xuất dữ liệu CSV/Excel</li>
+                    <li>Responsive design</li>
+                </ul>
+            </div>
+
+            <!-- Budget & Goals -->
+            <div class="card">
+                <h3>🎯 Ngân sách & Mục tiêu</h3>
+                <div class="stat-item">
+                    <span class="stat-label">📊 Ngân sách Ăn uống</span>
+                    <span class="stat-value">42%</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); border-radius: 8px; height: 8px; margin: 8px 0;">
+                    <div style="background: #10b981; height: 100%; width: 42%; border-radius: 8px;"></div>
+                </div>
+                
+                <div class="stat-item">
+                    <span class="stat-label">💰 Mục tiêu: Mua Laptop</span>
+                    <span class="stat-value">20%</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); border-radius: 8px; height: 8px; margin: 8px 0;">
+                    <div style="background: #3b82f6; height: 100%; width: 20%; border-radius: 8px;"></div>
+                </div>
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="card">
+                <h3>⚙️ Tech Stack & Cloud</h3>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <strong>Frontend</strong>
+                        HTML5, CSS3<br>
+                        Vanilla JavaScript<br>
+                        Chart.js
+                    </div>
+                    <div class="tech-item">
+                        <strong>Backend</strong>
+                        Node.js<br>
+                        Express.js<br>
+                        JWT Auth
+                    </div>
+                    <div class="tech-item">
+                        <strong>Database</strong>
+                        Supabase<br>
+                        PostgreSQL<br>
+                        Cloud RLS
+                    </div>
+                    <div class="tech-item">
+                        <strong>Deployment</strong>
+                        Render<br>
+                        Docker<br>
+                        CI/CD GitHub
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="card" style="text-align: center; margin-top: 40px;">
+            <h3>📚 Buổi 4: Cloud Computing Project</h3>
+            <p>SpendWise Personal - Ứng dụng quản lý tài chính cá nhân trên Cloud</p>
+            <p><strong>Triển khai:</strong> Production-ready với Free tier cloud services</p>
+            <p><strong>Ngày:</strong> September 25, 2026</p>
+            
+            <div style="margin-top: 20px;">
+                <a href="/" class="btn">🚀 Try Live App</a>
+                <a href="https://github.com/vuonglo560-ai/zero" target="_blank" class="btn">📂 View Source</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

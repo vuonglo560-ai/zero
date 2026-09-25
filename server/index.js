@@ -35,6 +35,31 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Health check without API prefix
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Standalone demo route
+app.get('/standalone-demo', (req, res) => {
+  const demoPath = path.join(__dirname, '..', 'public', 'standalone-demo.html');
+  if (fs.existsSync(demoPath)) {
+    res.sendFile(demoPath);
+  } else {
+    res.status(404).send('Demo page not found');
+  }
+});
+
+// No-auth demo route  
+app.get('/no-auth-demo', (req, res) => {
+  const demoPath = path.join(__dirname, '..', 'public', 'no-auth-demo.html');
+  if (fs.existsSync(demoPath)) {
+    res.sendFile(demoPath);
+  } else {
+    res.status(404).send('Demo page not found');
+  }
+});
+
 // SPA fallback — serve index.html cho mọi route không phải API
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, '..', 'public', 'index.html');

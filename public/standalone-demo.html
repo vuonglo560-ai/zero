@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendWise Personal - Standalone Demo</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .demo-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .demo-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+        .demo-login-btn {
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .demo-login-btn:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>💎 SpendWise Personal</h1>
+        <p>Quản lý tài chính cá nhân thông minh trên Cloud</p>
+        
+        <div class="demo-info">
+            <h3>🚀 Live Production Demo</h3>
+            <p><strong>URL:</strong> https://spendwise-personal.onrender.com</p>
+            <p><strong>Demo Account:</strong> demo@example.com / demo123</p>
+            <p><strong>Status:</strong> <span id="health-status">Checking...</span></p>
+            
+            <div style="margin-top: 15px;">
+                <a href="/" class="demo-login-btn">🔑 Đăng nhập Demo</a>
+                <a href="/demo.html" class="demo-login-btn">📊 Xem Dashboard Demo</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="feature-grid">
+            <!-- Authentication Status -->
+            <div class="feature-card">
+                <h3>🔐 Hệ thống Xác thực</h3>
+                <div id="auth-test-results">
+                    <button onclick="testAuthentication()" class="demo-login-btn">Test Authentication</button>
+                    <div id="auth-results"></div>
+                </div>
+            </div>
+
+            <!-- Dashboard Overview -->
+            <div class="feature-card">
+                <h3>📊 Dashboard Tổng quan</h3>
+                <div class="stats-grid" style="margin: 15px 0;">
+                    <div class="stat-card income">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-content">
+                            <div class="stat-value">₫25,000,000</div>
+                            <div class="stat-label">Thu nhập tháng 9</div>
+                        </div>
+                    </div>
+                    <div class="stat-card expense">
+                        <div class="stat-icon">💸</div>
+                        <div class="stat-content">
+                            <div class="stat-value">₫8,500,000</div>
+                            <div class="stat-label">Chi tiêu tháng 9</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallets Management -->
+            <div class="feature-card">
+                <h3>💼 Quản lý Ví tiền</h3>
+                <div class="wallet-list">
+                    <div class="wallet-item">
+                        <span class="wallet-icon">💵</span>
+                        <div class="wallet-info">
+                            <div class="wallet-name">Tiền mặt</div>
+                            <div class="wallet-balance">₫5,000,000</div>
+                        </div>
+                    </div>
+                    <div class="wallet-item">
+                        <span class="wallet-icon">🏦</span>
+                        <div class="wallet-info">
+                            <div class="wallet-name">Vietcombank</div>
+                            <div class="wallet-balance">₫25,000,000</div>
+                        </div>
+                    </div>
+                    <div class="wallet-item">
+                        <span class="wallet-icon">📱</span>
+                        <div class="wallet-info">
+                            <div class="wallet-name">Ví MoMo</div>
+                            <div class="wallet-balance">₫1,500,000</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expense Chart -->
+            <div class="feature-card">
+                <h3>📈 Biểu đồ Chi tiêu</h3>
+                <canvas id="demo-expense-chart" width="300" height="200"></canvas>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="feature-card">
+                <h3>💳 Giao dịch Gần đây</h3>
+                <div class="transaction-list">
+                    <div class="transaction-item expense">
+                        <span class="tx-icon">🍽️</span>
+                        <div class="tx-info">
+                            <div class="tx-title">Ăn trưa nhà hàng</div>
+                            <div class="tx-category">Ăn uống • Hôm nay</div>
+                        </div>
+                        <div class="tx-amount expense">-₫250,000</div>
+                    </div>
+                    <div class="transaction-item income">
+                        <span class="tx-icon">💰</span>
+                        <div class="tx-info">
+                            <div class="tx-title">Lương tháng 9</div>
+                            <div class="tx-category">Thu nhập • 25/09/2026</div>
+                        </div>
+                        <div class="tx-amount income">+₫15,000,000</div>
+                    </div>
+                    <div class="transaction-item expense">
+                        <span class="tx-icon">☕</span>
+                        <div class="tx-info">
+                            <div class="tx-title">Café & Bánh ngọt</div>
+                            <div class="tx-category">Ăn uống • Hôm qua</div>
+                        </div>
+                        <div class="tx-amount expense">-₫85,000</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Endpoints Test -->
+            <div class="feature-card">
+                <h3>🔗 API Health Check</h3>
+                <div id="api-test-results">
+                    <button onclick="testAllAPIs()" class="demo-login-btn">Test All APIs</button>
+                    <div id="api-results"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tech Stack Info -->
+        <div class="feature-card" style="margin-top: 30px;">
+            <h3>⚙️ Technical Stack</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 15px 0;">
+                <div>
+                    <strong>Frontend:</strong><br>
+                    HTML5, CSS3, Vanilla JavaScript<br>
+                    Chart.js for visualizations
+                </div>
+                <div>
+                    <strong>Backend:</strong><br>
+                    Node.js, Express.js<br>
+                    JWT Authentication
+                </div>
+                <div>
+                    <strong>Database:</strong><br>
+                    Supabase PostgreSQL<br>
+                    Cloud-native with RLS
+                </div>
+                <div>
+                    <strong>Deployment:</strong><br>
+                    Render (Docker Container)<br>
+                    Auto-deploy from GitHub
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        let demoChart = null;
+
+        // Health Check
+        async function checkHealth() {
+            try {
+                const response = await fetch('/health');
+                if (response.ok) {
+                    document.getElementById('health-status').innerHTML = '<span style="color: #10b981;">🟢 Online</span>';
+                } else {
+                    document.getElementById('health-status').innerHTML = '<span style="color: #ef4444;">🔴 Issues</span>';
+                }
+            } catch (err) {
+                document.getElementById('health-status').innerHTML = '<span style="color: #ef4444;">🔴 Offline</span>';
+            }
+        }
+
+        // Test Authentication
+        async function testAuthentication() {
+            const resultsDiv = document.getElementById('auth-results');
+            resultsDiv.innerHTML = '<div style="margin: 10px 0;">Testing authentication...</div>';
+
+            try {
+                const response = await fetch(API_BASE + '/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'demo@example.com',
+                        password: 'demo123'
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.token) {
+                    resultsDiv.innerHTML = `
+                        <div style="color: #10b981; margin: 10px 0;">
+                            ✅ Login Success<br>
+                            User: ${result.user.name}<br>
+                            Token: ${result.token.substring(0, 30)}...
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div style="color: #ef4444; margin: 10px 0;">
+                            ❌ Login Failed<br>
+                            ${result.error || 'Unknown error'}
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                resultsDiv.innerHTML = `
+                    <div style="color: #ef4444; margin: 10px 0;">
+                        ❌ Network Error<br>
+                        ${err.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Test All APIs
+        async function testAllAPIs() {
+            const resultsDiv = document.getElementById('api-results');
+            resultsDiv.innerHTML = '<div style="margin: 10px 0;">Testing APIs...</div>';
+
+            const endpoints = [
+                { name: 'Health Check', url: '/health', method: 'GET' },
+                { name: 'Demo Login', url: '/api/auth/login', method: 'POST', body: { email: 'demo@example.com', password: 'demo123' } }
+            ];
+
+            let results = '';
+
+            for (const endpoint of endpoints) {
+                try {
+                    const options = { method: endpoint.method };
+                    if (endpoint.body) {
+                        options.headers = { 'Content-Type': 'application/json' };
+                        options.body = JSON.stringify(endpoint.body);
+                    }
+
+                    const response = await fetch(endpoint.url.startsWith('/api') ? API_BASE + endpoint.url.substring(4) : endpoint.url, options);
+                    const status = response.ok ? '✅' : '❌';
+                    
+                    results += `<div style="margin: 5px 0;">
+                        ${status} ${endpoint.name}: ${response.status} ${response.statusText}
+                    </div>`;
+                } catch (err) {
+                    results += `<div style="margin: 5px 0; color: #ef4444;">
+                        ❌ ${endpoint.name}: ${err.message}
+                    </div>`;
+                }
+            }
+
+            resultsDiv.innerHTML = results;
+        }
+
+        // Initialize Demo Chart
+        function initDemoChart() {
+            const ctx = document.getElementById('demo-expense-chart');
+            if (!ctx) return;
+
+            if (demoChart) {
+                demoChart.destroy();
+            }
+
+            demoChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ăn uống', 'Di chuyển', 'Mua sắm', 'Giải trí', 'Khác'],
+                    datasets: [{
+                        data: [3200000, 1500000, 2800000, 800000, 200000],
+                        backgroundColor: [
+                            '#ef4444',
+                            '#f97316', 
+                            '#eab308',
+                            '#22c55e',
+                            '#6366f1'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#e5e7eb', font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkHealth();
+            initDemoChart();
+        });
+    </script>
+</body>
+</html>

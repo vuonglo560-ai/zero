@@ -38,25 +38,32 @@ async function showApp() {
   document.getElementById('auth-view').style.display = 'none';
   document.getElementById('app-view').style.display = 'block';
 
-  // Skip /me verification for demo user - use stored data
-  if (currentUser && currentUser.email === 'demo@example.com') {
-    console.log('Demo user detected - using stored profile');
-  } else {
-    // Only verify for non-demo users
-    try {
-      const freshUser = await apiGet('/api/auth/me');
-      currentUser = { ...currentUser, ...freshUser };
-      localStorage.setItem('sw_user', JSON.stringify(currentUser));
-    } catch (err) {
-      console.log('User verification failed, using stored profile:', err.message);
-      // Don't logout, just continue with stored data
-    }
-  }
-
+  // Initialize app first, verify user later to avoid race condition
   updateSidebarUser();
   await Promise.all([loadCategories(), loadWallets()]);
   updateMonthDisplay();
   navigateTo('dashboard');
+
+  // Defer user verification to prevent blocking UI initialization
+  setTimeout(async () => {
+    try {
+      // For demo user, skip verification entirely
+      if (currentUser && currentUser.email === 'demo@example.com') {
+        console.log('Demo user detected - skipping server verification');
+        return;
+      }
+      
+      // For regular users, verify but don't logout on failure
+      const freshUser = await apiGet('/api/auth/me');
+      currentUser = { ...currentUser, ...freshUser };
+      localStorage.setItem('sw_user', JSON.stringify(currentUser));
+      console.log('User verification successful');
+    } catch (err) {
+      console.log('User verification failed, continuing with cached data:', err.message);
+      // Don't logout - just log the issue and continue
+      // User can still use the app with cached data
+    }
+  }, 1000); // Delay verification by 1 second to let UI fully load
 }
 
 function updateSidebarUser() {
@@ -77,19 +84,35 @@ function switchAuthTab(tab) {
 async function handleLogin(e) {
   e.preventDefault();
   setAuthLoading(true, 'login');
+  
   try {
-    const res = await apiPost('/api/auth/login', {
+    const formData = {
       email: document.getElementById('login-email').value,
       password: document.getElementById('login-password').value,
-    });
+    };
+    
+    // Clear any previous errors
+    document.getElementById('auth-alert').style.display = 'none';
+    
+    const res = await apiFetch('POST', '/api/auth/login', formData, 2); // 2 retries
+    
+    if (!res.token || !res.user) {
+      throw new Error('Phản hồi đăng nhập không hợp lệ');
+    }
+    
+    // Store authentication data
     token = res.token;
     currentUser = res.user;
     localStorage.setItem('sw_token', token);
     localStorage.setItem('sw_user', JSON.stringify(currentUser));
+    
+    // Show app with improved initialization
     await showApp();
     showToast('✅ Chào mừng ' + currentUser.name + '!', 'success');
+    
   } catch (err) {
-    showAuthAlert(err.message);
+    console.error('Login error:', err);
+    showAuthAlert(err.message || 'Lỗi đăng nhập. Vui lòng thử lại.');
   } finally {
     setAuthLoading(false, 'login');
   }
@@ -98,27 +121,53 @@ async function handleLogin(e) {
 async function handleRegister(e) {
   e.preventDefault();
   setAuthLoading(true, 'register');
+  
   try {
-    const res = await apiPost('/api/auth/register', {
+    const formData = {
       name: document.getElementById('reg-name').value,
       email: document.getElementById('reg-email').value,
       password: document.getElementById('reg-password').value,
-    });
+    };
+    
+    // Clear any previous errors
+    document.getElementById('auth-alert').style.display = 'none';
+    
+    const res = await apiFetch('POST', '/api/auth/register', formData, 2); // 2 retries
+    
+    if (!res.token || !res.user) {
+      throw new Error('Phản hồi đăng ký không hợp lệ');
+    }
+    
+    // Store authentication data
     token = res.token;
     currentUser = res.user;
     localStorage.setItem('sw_token', token);
     localStorage.setItem('sw_user', JSON.stringify(currentUser));
+    
+    // Show app with improved initialization
     await showApp();
     showToast('🎉 Tạo tài khoản cá nhân thành công!', 'success');
+    
   } catch (err) {
-    showAuthAlert(err.message);
+    console.error('Register error:', err);
+    showAuthAlert(err.message || 'Lỗi đăng ký. Vui lòng thử lại.');
   } finally {
     setAuthLoading(false, 'register');
   }
 }
 
-function handleLogout() {
-  token = null; currentUser = null;
+function handleLogout(reason = 'user_action') {
+  // Log logout reason for debugging
+  console.log('Logout triggered:', reason);
+  
+  // Don't auto-logout demo user unless explicitly requested
+  if (reason !== 'user_action' && currentUser && currentUser.email === 'demo@example.com') {
+    console.log('Auto-logout blocked for demo user');
+    return;
+  }
+  
+  token = null; 
+  currentUser = null;
   localStorage.removeItem('sw_token');
   localStorage.removeItem('sw_user');
   destroyCharts();
@@ -1002,18 +1051,91 @@ function showToast(msg, type = 'info') {
   setTimeout(() => { toast.style.animation = 'slideUp 0.3s ease reverse'; setTimeout(() => toast.remove(), 300); }, 3500);
 }
 
+// ── JWT HELPER FUNCTIONS ─────────────────────────────────────────
+function decodeJWT(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    console.error('JWT decode error:', e);
+    return null;
+  }
+}
+
+function isTokenExpired(token) {
+  if (!token) return true;
+  const payload = decodeJWT(token);
+  if (!payload || !payload.exp) return true;
+  return Date.now() >= payload.exp * 1000;
+}
+
+function checkTokenExpiry() {
+  if (!token) return false;
+  
+  if (isTokenExpired(token)) {
+    console.log('Token has expired');
+    handleLogout('token_expired');
+    showToast('⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 'warning');
+    return false;
+  }
+  return true;
+}
+
 // ── API HELPERS ──────────────────────────────────────────────────
-async function apiFetch(method, url, body) {
+async function apiFetch(method, url, body, retries = 1) {
+  // Check token expiry before making request
+  if (token && !checkTokenExpiry()) {
+    throw new Error('Token đã hết hạn');
+  }
+  
   const opts = { method, headers: { 'Content-Type': 'application/json' } };
   if (token) opts.headers['Authorization'] = 'Bearer ' + token;
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(API + url, opts);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    if (res.status === 401) { handleLogout(); throw new Error('Phiên đăng nhập hết hạn.'); }
-    throw new Error(data.error || `Lỗi HTTP ${res.status}`);
+  
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(API + url, opts);
+      const data = await res.json().catch(() => ({}));
+      
+      if (!res.ok) {
+        // Handle 401 more intelligently
+        if (res.status === 401) {
+          // For /api/auth/me endpoint, don't auto-logout - let caller handle it
+          if (url.includes('/auth/me')) {
+            throw new Error('Token verification failed');
+          }
+          
+          // For demo user, don't logout on token issues
+          if (currentUser && currentUser.email === 'demo@example.com') {
+            console.log('Demo user 401 error - continuing without logout');
+            throw new Error('Lỗi xác thực demo user');
+          }
+          
+          // Only auto-logout for critical auth endpoints
+          if (url.includes('/auth/login') || url.includes('/auth/register')) {
+            throw new Error(data.error || 'Lỗi xác thực');
+          }
+          
+          // For other endpoints, try graceful degradation
+          console.log('401 error on', url, '- attempting graceful handling');
+          throw new Error(data.error || 'Lỗi quyền truy cập');
+        }
+        
+        throw new Error(data.error || `Lỗi HTTP ${res.status}`);
+      }
+      
+      return data;
+    } catch (networkError) {
+      if (attempt < retries && (networkError.message.includes('fetch') || networkError.message.includes('network'))) {
+        console.log(`Network error on attempt ${attempt + 1}, retrying...`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        continue;
+      }
+      throw networkError;
+    }
   }
-  return data;
 }
 const apiGet = url => apiFetch('GET', url);
 const apiPost = (url, body) => apiFetch('POST', url, body);
