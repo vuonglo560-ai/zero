@@ -1,0 +1,78 @@
+[
+  {
+    "timestamp": "2026-09-25T04:28:11.228Z",
+    "summary": {
+      "totalChecks": 7,
+      "successCount": 7,
+      "failureCount": 0,
+      "successRate": 100,
+      "duration": 740
+    },
+    "results": [
+      {
+        "name": "Health Check",
+        "url": "/health",
+        "status": 200,
+        "success": true,
+        "duration": 390,
+        "size": 54,
+        "timestamp": "2026-09-25T04:28:10.872Z"
+      },
+      {
+        "name": "API Health",
+        "url": "/api/health",
+        "status": 200,
+        "success": true,
+        "duration": 362,
+        "size": 182,
+        "timestamp": "2026-09-25T04:28:10.892Z"
+      },
+      {
+        "name": "Demo Login",
+        "url": "/api/auth/login",
+        "status": 200,
+        "success": true,
+        "duration": 365,
+        "size": 327,
+        "timestamp": "2026-09-25T04:28:10.896Z"
+      },
+      {
+        "name": "Main App",
+        "url": "/",
+        "status": 200,
+        "success": true,
+        "duration": 342,
+        "size": 29920,
+        "timestamp": "2026-09-25T04:28:10.876Z"
+      },
+      {
+        "name": "Demo Page",
+        "url": "/demo.html",
+        "status": 200,
+        "success": true,
+        "duration": 371,
+        "size": 11675,
+        "timestamp": "2026-09-25T04:28:10.906Z"
+      },
+      {
+        "name": "Standalone Demo",
+        "url": "/standalone-demo",
+        "status": 200,
+        "success": true,
+        "duration": 378,
+        "size": 13766,
+        "timestamp": "2026-09-25T04:28:10.913Z"
+      },
+      {
+        "name": "No Auth Demo",
+        "url": "/no-auth-demo",
+        "status": 200,
+        "success": true,
+        "duration": 668,
+        "size": 14036,
+        "timestamp": "2026-09-25T04:28:11.204Z"
+      }
+    ],
+    "alerts": []
+  }
+]

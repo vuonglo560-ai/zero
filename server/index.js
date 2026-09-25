@@ -60,6 +60,16 @@ app.get('/no-auth-demo', (req, res) => {
   }
 });
 
+// Monitor dashboard route
+app.get('/monitor', (req, res) => {
+  const monitorPath = path.join(__dirname, '..', 'public', 'monitor-dashboard.html');
+  if (fs.existsSync(monitorPath)) {
+    res.sendFile(monitorPath);
+  } else {
+    res.status(404).send('Monitor dashboard not found');
+  }
+});
+
 // SPA fallback — serve index.html cho mọi route không phải API
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, '..', 'public', 'index.html');
