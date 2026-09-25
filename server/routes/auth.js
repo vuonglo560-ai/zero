@@ -18,19 +18,74 @@ router.post('/register', async (req, res) => {
     if (existing) return res.status(409).json({ error: 'Email này đã được đăng ký.' });
 
     const hash = await bcrypt.hash(password, 10);
-    const { data: user, error: insertErr } = await supabase
+    
+    // Try insert without explicit ID (let sequence auto-generate)
+    let { data: user, error: insertErr } = await supabase
       .from('users')
       .insert({ name, email, password: hash })
       .select('id, name, email')
       .single();
 
+    // If sequence error, try to fix sequence and retry
+    if (insertErr && insertErr.code === '23505' && insertErr.message.includes('users_pkey')) {
+      console.log('⚠️ Sequence conflict detected, attempting to fix...');
+      
+      // Get max ID and set sequence
+      const { data: maxIdResult } = await supabase
+        .from('users')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1);
+      
+      if (maxIdResult && maxIdResult.length > 0) {
+        const nextId = maxIdResult[0].id + 1;
+        // Use raw SQL to fix sequence
+        await supabase.rpc('exec_sql', { 
+          sql: `SELECT setval('public.users_id_seq', ${nextId});` 
+        }).catch(() => {}); // Ignore errors
+        
+        // Retry insert
+        const retry = await supabase
+          .from('users')
+          .insert({ name, email, password: hash })
+          .select('id, name, email')
+          .single();
+          
+        user = retry.data;
+        insertErr = retry.error;
+      }
+    }
+
     if (insertErr) throw insertErr;
 
     // Tạo mặc định 2 ví tiền cho user mới
-    await supabase.from('wallets').insert([
+    const { error: walletErr } = await supabase.from('wallets').insert([
       { user_id: user.id, name: 'Tiền mặt', type: 'cash', balance: 0, icon: '💵', color: '#10b981' },
       { user_id: user.id, name: 'Tài khoản Ngân hàng', type: 'bank', balance: 0, icon: '🏦', color: '#3b82f6' },
     ]);
+    
+    // If wallet creation fails due to sequence, try to fix it
+    if (walletErr && walletErr.code === '23505') {
+      console.log('⚠️ Wallet sequence conflict, attempting to fix...');
+      const { data: maxWalletId } = await supabase
+        .from('wallets')
+        .select('id')
+        .order('id', { ascending: false })
+        .limit(1);
+      
+      if (maxWalletId && maxWalletId.length > 0) {
+        const nextWalletId = maxWalletId[0].id + 1;
+        await supabase.rpc('exec_sql', { 
+          sql: `SELECT setval('public.wallets_id_seq', ${nextWalletId});` 
+        }).catch(() => {});
+        
+        // Retry wallet creation
+        await supabase.from('wallets').insert([
+          { user_id: user.id, name: 'Tiền mặt', type: 'cash', balance: 0, icon: '💵', color: '#10b981' },
+          { user_id: user.id, name: 'Tài khoản Ngân hàng', type: 'bank', balance: 0, icon: '🏦', color: '#3b82f6' },
+        ]);
+      }
+    }
 
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
     res.status(201).json({ message: 'Đăng ký thành công!', token, user });
