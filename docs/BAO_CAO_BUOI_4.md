@@ -5,7 +5,7 @@
 ## 📌 THÔNG TIN DỰ ÁN
 * **Tên dự án:** SpendWise Personal — Ứng dụng Quản lý Tài chính & Chi tiêu Cá nhân trên Cloud
 * **Mô hình kiến trúc:** 3-Tier Web Application (Frontend SPA + RESTful API Backend + Cloud Database & Storage)
-* **Công nghệ chủ đạo:** Node.js, Express.js, SQLite (sql.js / WebAssembly & Cloud-ready), Vanilla JavaScript SPA, Chart.js, Docker
+* **Công nghệ chủ đạo:** Node.js, Express.js, Supabase PostgreSQL, Vanilla JavaScript SPA, Chart.js, Docker
 * **Phiên bản:** v1.0.0 (MVP Cloud Release)
 * **Ngày hoàn thiện:** 25/09/2026
 
@@ -20,7 +20,7 @@
 | **Dự phòng (Alternative Deployment)** | Railway App Platform | `https://spendwise-personal.up.railway.app` | ✅ Sẵn sàng đồng bộ |
 | **Giao diện Tĩnh (Decoupled SPA)** | Vercel / Cloudflare Pages | `https://spendwise-personal.vercel.app` | ✅ Tương thích SPA |
 | **API Health Check Endpoint** | Cloud Server | `https://spendwise-personal.onrender.com/api/health` | ✅ 200 OK |
-| **Kho mã nguồn (GitHub Repo)** | GitHub | `https://github.com/your-username/spendwise-personal` | ✅ CI/CD Integrated |
+| **Kho mã nguồn (GitHub Repo)** | GitHub | `https://github.com/vuonglo560-ai/zero` | ✅ CI/CD Integrated |
 
 ### 1.2. Phân chia kiến trúc triển khai Cloud
 1. **Frontend (Cloud Hosting):**
@@ -30,8 +30,10 @@
    - Đóng gói Docker Container chuẩn Linux Alpine (`node:18-alpine`), chạy ứng dụng Express.js API.
    - Cung cấp RESTful APIs quản lý phiên đăng nhập (JWT), tính toán thống kê và xử lý giao dịch tài chính.
 3. **Database (Cloud Database):**
-   - Phiên bản SQLite nhúng WebAssembly kết hợp lưu trữ file database tự động đồng bộ hóa trên Persistent Volume / Disk của Cloud.
-   - Sẵn sàng chuyển tiếp sang PostgreSQL trên **Neon Database / Supabase** thông qua cấu hình `DATABASE_URL`.
+   - Supabase PostgreSQL cloud-hosted (500MB free tier)
+   - Row-Level Security (RLS) policies for data isolation
+   - Daily automatic backup & point-in-time recovery
+   - Connection pooling for optimal performance
 4. **Cloud Storage (Lưu trữ tệp và dữ liệu):**
    - Tệp xuất dữ liệu CSV, file backup cơ sở dữ liệu định kỳ và assets được lưu trữ trên Cloud Storage (tương thích AWS S3 / Cloudinary).
 
@@ -266,7 +268,7 @@ git add .
 git commit -m "feat: complete Session 4 MVP, test suite, and cloud deployment configs"
 
 # 2. Liên kết remote repository và push nhánh main
-git remote add origin https://github.com/your-username/spendwise-personal.git
+git remote add origin https://github.com/vuonglo560-ai/zero.git
 git branch -M main
 git push -u origin main
 ```
