@@ -27,10 +27,11 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: supabase ? 'ok' : 'warning',
     message: supabase
-      ? 'SpendWise Personal đang chạy! (Supabase Cloud)'
+      ? 'SpendWise Personal đang chạy! (Supabase Cloud) - Updated for Testing'
       : '⚠️ Supabase chưa kết nối — kiểm tra Environment Variables',
     supabase_connected: !!supabase,
     timestamp: new Date().toISOString(),
+    version: '1.0.1'
   });
 });
 
