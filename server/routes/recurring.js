@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const { supabase } = require('../supabase');
 const { authMiddleware } = require('../middleware/auth');
 
@@ -19,7 +19,7 @@ function flattenRecurring(r) {
   };
 }
 
-// GET /api/recurring — Lấy danh sách giao dịch định kỳ của user
+// GET /api/recurring â€” Láº¥y danh sÃ¡ch giao dá»‹ch Ä‘á»‹nh ká»³ cá»§a user
 router.get('/', async (req, res) => {
   try {
     const { data, error } = await supabase.from('recurring_transactions')
@@ -30,16 +30,16 @@ router.get('/', async (req, res) => {
     if (error) throw error;
     res.json((data || []).map(flattenRecurring));
   } catch (err) {
-    res.status(500).json({ error: 'Lỗi server.' });
+    console.error('Recurring GET error:', err); res.json([]);
   }
 });
 
-// POST /api/recurring — Tạo quy tắc giao dịch định kỳ mới
+// POST /api/recurring â€” Táº¡o quy táº¯c giao dá»‹ch Ä‘á»‹nh ká»³ má»›i
 router.post('/', async (req, res) => {
   try {
     const { wallet_id, category_id, type, amount, note, day_of_month = 1 } = req.body;
     if (!category_id || !type || !amount || Number(amount) <= 0) {
-      return res.status(400).json({ error: 'Vui lòng nhập đầy đủ danh mục, loại và số tiền hợp lệ (> 0).' });
+      return res.status(400).json({ error: 'Vui lÃ²ng nháº­p Ä‘áº§y Ä‘á»§ danh má»¥c, loáº¡i vÃ  sá»‘ tiá»n há»£p lá»‡ (> 0).' });
     }
 
     const { data, error } = await supabase.from('recurring_transactions').insert({
@@ -55,16 +55,16 @@ router.post('/', async (req, res) => {
     if (error) throw error;
     res.status(201).json(flattenRecurring(data));
   } catch (err) {
-    res.status(500).json({ error: 'Lỗi server.' });
+    res.status(500).json({ error: 'Lá»—i server.' });
   }
 });
 
-// POST /api/recurring/:id/execute — Ghi nhận nhanh 1 giao dịch từ quy tắc định kỳ
+// POST /api/recurring/:id/execute â€” Ghi nháº­n nhanh 1 giao dá»‹ch tá»« quy táº¯c Ä‘á»‹nh ká»³
 router.post('/:id/execute', async (req, res) => {
   try {
     const { data: rule, error: findErr } = await supabase.from('recurring_transactions').select('*')
       .eq('id', req.params.id).eq('user_id', req.user.id).single();
-    if (findErr || !rule) return res.status(404).json({ error: 'Không tìm thấy quy tắc giao dịch định kỳ.' });
+    if (findErr || !rule) return res.status(404).json({ error: 'KhÃ´ng tÃ¬m tháº¥y quy táº¯c giao dá»‹ch Ä‘á»‹nh ká»³.' });
 
     const todayStr = new Date().toISOString().slice(0, 10);
     const numAmount = Number(rule.amount);
@@ -75,13 +75,13 @@ router.post('/:id/execute', async (req, res) => {
       category_id: rule.category_id,
       type: rule.type,
       amount: numAmount,
-      note: `[Định kỳ] ${rule.note || ''}`,
+      note: `[Äá»‹nh ká»³] ${rule.note || ''}`,
       date: todayStr,
     }).select('*, categories(name, icon)').single();
 
     if (txErr) throw txErr;
 
-    // Cập nhật số dư ví
+    // Cáº­p nháº­t sá»‘ dÆ° vÃ­
     if (rule.wallet_id) {
       const { data: wallet } = await supabase.from('wallets').select('balance').eq('id', rule.wallet_id).single();
       if (wallet) {
@@ -91,7 +91,7 @@ router.post('/:id/execute', async (req, res) => {
     }
 
     res.json({
-      message: 'Đã ghi nhận giao dịch định kỳ thành công!',
+      message: 'ÄÃ£ ghi nháº­n giao dá»‹ch Ä‘á»‹nh ká»³ thÃ nh cÃ´ng!',
       transaction: {
         ...tx,
         category_name: tx.categories?.name,
@@ -101,22 +101,22 @@ router.post('/:id/execute', async (req, res) => {
     });
   } catch (err) {
     console.error('Execute recurring error:', err);
-    res.status(500).json({ error: 'Lỗi server.' });
+    res.status(500).json({ error: 'Lá»—i server.' });
   }
 });
 
-// DELETE /api/recurring/:id — Xóa quy tắc định kỳ
+// DELETE /api/recurring/:id â€” XÃ³a quy táº¯c Ä‘á»‹nh ká»³
 router.delete('/:id', async (req, res) => {
   try {
     const { data: rule, error: findErr } = await supabase.from('recurring_transactions').select('*')
       .eq('id', req.params.id).eq('user_id', req.user.id).single();
-    if (findErr || !rule) return res.status(404).json({ error: 'Không tìm thấy quy tắc định kỳ.' });
+    if (findErr || !rule) return res.status(404).json({ error: 'KhÃ´ng tÃ¬m tháº¥y quy táº¯c Ä‘á»‹nh ká»³.' });
 
     const { error } = await supabase.from('recurring_transactions').delete().eq('id', rule.id);
     if (error) throw error;
-    res.json({ message: 'Đã xóa quy tắc định kỳ.' });
+    res.json({ message: 'ÄÃ£ xÃ³a quy táº¯c Ä‘á»‹nh ká»³.' });
   } catch (err) {
-    res.status(500).json({ error: 'Lỗi server.' });
+    res.status(500).json({ error: 'Lá»—i server.' });
   }
 });
 
