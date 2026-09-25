@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { supabase } = require('../supabase');
@@ -124,30 +124,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Vui lòng nhập email và mật khẩu.' });
 
-    // Demo bypass for presentation
-    if (email === 'demo@example.com' && password === 'demo123') {
-      console.log('Demo login attempt - FORCING User ID 7 for production...');
-      
-      // FORCE use User ID 7 since that's where the data is
-      const demoUser = {
-        id: 7,
-        name: 'Nguyễn Văn A',
-        email: 'demo@example.com'
-      };
-      
-      console.log(`Demo login success with FORCED user ID: ${demoUser.id}`);
-      const token = jwt.sign({ 
-        id: demoUser.id, 
-        email: demoUser.email, 
-        name: demoUser.name 
-      }, JWT_SECRET, { expiresIn: '7d' });
-      return res.json({
-        message: 'Đăng nhập thành công!',
-        token,
-        user: demoUser
-      });
-    }
-
+    // Query user from Supabase (including demo user)
     const { data: user } = await supabase.from('users').select('*').eq('email', email).maybeSingle();
     if (!user || !(await bcrypt.compare(password, user.password)))
       return res.status(401).json({ error: 'Email hoặc mật khẩu không đúng.' });
@@ -171,49 +148,34 @@ router.post('/login', async (req, res) => {
 // GET /api/auth/me
 router.get('/me', authMiddleware, async (req, res) => {
   try {
-    // Demo user - return stored data immediately
-    if (req.user.email === 'demo@example.com') {
-      return res.json({
-        id: req.user.id,
-        name: req.user.name || 'Nguyễn Văn A',
-        email: 'demo@example.com',
-        created_at: '2024-09-01T00:00:00.000Z'
-      });
-    }
+    // Try database first for all users
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, name, email, created_at')
+      .eq('id', req.user.id)
+      .single();
     
-    // Regular users - try database first, fallback to JWT data
-    try {
-      const { data: user, error } = await supabase
-        .from('users')
-        .select('id, name, email, created_at')
-        .eq('id', req.user.id)
-        .single();
-      
-      if (error) {
-        // Database error - return JWT payload data
-        console.log('Database error in /me, using JWT fallback:', error.message);
-        return res.json({
-          id: req.user.id,
-          name: req.user.name,
-          email: req.user.email,
-          created_at: new Date().toISOString()
-        });
-      }
-      
-      res.json(user);
-    } catch (dbError) {
-      // Fallback to JWT payload if database is unavailable
-      console.log('Database unavailable in /me, using JWT data');
-      res.json({
+    if (error) {
+      // Database error - return JWT payload data as fallback
+      console.log('Database error in /me, using JWT fallback:', error.message);
+      return res.json({
         id: req.user.id,
         name: req.user.name,
         email: req.user.email,
         created_at: new Date().toISOString()
       });
     }
+    
+    res.json(user);
   } catch (err) {
     console.error('Error in /api/auth/me:', err);
-    res.status(500).json({ error: 'Lỗi server.' });
+    // Fallback to JWT payload
+    res.json({
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      created_at: new Date().toISOString()
+    });
   }
 });
 
