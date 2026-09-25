@@ -151,7 +151,7 @@ router.get('/categories', async (req, res) => {
     if (error) throw error;
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: 'Lỗi server.' });
+    res.json([]);
   }
 });
 
