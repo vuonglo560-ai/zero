@@ -3,9 +3,33 @@
  * Hỗ trợ kết nối Cloud Database và Cloud Storage của Supabase
  */
 const { createClient } = require('@supabase/supabase-js');
+const fs = require('fs');
+const path = require('path');
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
+// Hàm đọc từ Secret Files hoặc Environment Variables
+function getEnvOrSecret(envName, secretPath) {
+  // 1. Thử đọc từ Environment Variable trước
+  if (process.env[envName]) {
+    return process.env[envName];
+  }
+  
+  // 2. Thử đọc từ Secret File (Render)
+  try {
+    if (fs.existsSync(secretPath)) {
+      return fs.readFileSync(secretPath, 'utf8').trim();
+    }
+  } catch (err) {
+    // Ignore file read errors
+  }
+  
+  return null;
+}
+
+const SUPABASE_URL = getEnvOrSecret('SUPABASE_URL', '/etc/secrets/SUPABASE_URL');
+const SUPABASE_SERVICE_KEY = getEnvOrSecret('SUPABASE_SERVICE_ROLE_KEY', '/etc/secrets/SUPABASE_SERVICE_ROLE_KEY');
+const SUPABASE_ANON_KEY = getEnvOrSecret('SUPABASE_ANON_KEY', '/etc/secrets/SUPABASE_ANON_KEY');
+
+const SUPABASE_KEY = SUPABASE_SERVICE_KEY || SUPABASE_ANON_KEY;
 
 let supabase = null;
 
@@ -17,11 +41,16 @@ if (SUPABASE_URL && SUPABASE_KEY) {
     }
   });
   console.log('⚡ Đã kết nối Supabase Cloud Client:', SUPABASE_URL);
-} else if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
-  console.error('❌ THIẾU biến môi trường SUPABASE_URL hoặc SUPABASE_KEY! Vui lòng cấu hình trong Vercel Environment Variables.');
-  // Không throw error để server vẫn khởi động, nhưng API sẽ trả lỗi rõ ràng
+  console.log('🔑 Sử dụng key type:', SUPABASE_SERVICE_KEY ? 'SERVICE_ROLE' : 'ANON');
 } else {
-  console.log('ℹ️ Chưa cấu hình SUPABASE_URL / SUPABASE_KEY trong .env (đang dùng chế độ local).');
+  console.error('❌ THIẾU Supabase config!');
+  console.log('📍 SUPABASE_URL:', SUPABASE_URL ? '✅ OK' : '❌ Missing');
+  console.log('📍 SUPABASE_KEY:', SUPABASE_KEY ? '✅ OK' : '❌ Missing');
+  console.log('📍 ENV vars:', Object.keys(process.env).filter(k => k.includes('SUPABASE')));
+  console.log('📍 Secret files check...');
+  ['/etc/secrets/SUPABASE_URL', '/etc/secrets/SUPABASE_ANON_KEY', '/etc/secrets/SUPABASE_SERVICE_ROLE_KEY'].forEach(p => {
+    console.log(`   ${p}:`, fs.existsSync(p) ? '✅ EXISTS' : '❌ NOT FOUND');
+  });
 }
 
 /**
