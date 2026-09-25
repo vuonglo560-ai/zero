@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Ứng dụng quản lý chi tiêu cá nhân trên Cloud",
   "main": "server/index.js",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
