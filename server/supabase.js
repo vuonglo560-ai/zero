@@ -38,10 +38,14 @@ if (SUPABASE_URL && SUPABASE_KEY) {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
+    },
+    realtime: {
+      disabled: true  // ← TẮT REALTIME để tránh lỗi WebSocket
     }
   });
   console.log('⚡ Đã kết nối Supabase Cloud Client:', SUPABASE_URL);
   console.log('🔑 Sử dụng key type:', SUPABASE_SERVICE_KEY ? 'SERVICE_ROLE' : 'ANON');
+  console.log('📡 Realtime: DISABLED (Node.js 18 compatibility)');
 } else {
   console.error('❌ THIẾU Supabase config!');
   console.log('📍 SUPABASE_URL:', SUPABASE_URL ? '✅ OK' : '❌ Missing');
