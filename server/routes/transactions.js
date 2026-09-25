@@ -33,6 +33,8 @@ function getMonthRange(month) {
 // GET /api/transactions
 router.get('/', async (req, res) => {
   try {
+    console.log(`Transactions API called for user ID: ${req.user.id}`);
+    
     const { month, category_id, wallet_id, type, limit = 200, offset = 0 } = req.query;
     const userId = req.user.id;
 
@@ -52,10 +54,13 @@ router.get('/', async (req, res) => {
     if (type) query = query.eq('type', type);
 
     const { data, error } = await query;
+    
+    console.log(`Transactions query result: ${data?.length || 0} transactions, error:`, error);
+    
     if (error) throw error;
     res.json((data || []).map(flattenTx));
   } catch (err) {
-    console.error('GET transactions error:', err);
+    console.error('Transactions API error:', err);
     res.status(500).json({ error: 'Lỗi server.' });
   }
 });

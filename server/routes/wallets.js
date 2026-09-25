@@ -8,13 +8,19 @@ router.use(authMiddleware);
 // GET /api/wallets — Lấy tất cả ví tiền của user
 router.get('/', async (req, res) => {
   try {
+    console.log(`Wallets API called for user ID: ${req.user.id}`);
+    
     const { data, error } = await supabase
       .from('wallets').select('*')
       .eq('user_id', req.user.id)
       .order('id');
+      
+    console.log(`Wallets query result: ${data?.length || 0} wallets, error:`, error);
+    
     if (error) throw error;
     res.json(data);
   } catch (err) {
+    console.error('Wallets API error:', err);
     res.status(500).json({ error: 'Lỗi server.' });
   }
 });
