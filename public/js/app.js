@@ -242,7 +242,7 @@ function getMonthLabel(ym) {
 // ── DATA LOADERS ─────────────────────────────────────────────────
 async function loadCategories() {
   try {
-    allCategories = await apiGet('/api/dashboard/categories');
+    allCategories = await apiGet('/api/categories');
     updateModalCategories('expense');
     const filterCat = document.getElementById('filter-category');
     if (filterCat) {
