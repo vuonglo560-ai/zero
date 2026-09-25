@@ -18,6 +18,7 @@ app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/wallets', require('./routes/wallets'));
 app.use('/api/budgets', require('./routes/budgets'));
+app.use('/api/categories', require('./routes/categories'));
 app.use('/api/goals', require('./routes/goals'));
 app.use('/api/debts', require('./routes/debts'));
 app.use('/api/recurring', require('./routes/recurring'));
